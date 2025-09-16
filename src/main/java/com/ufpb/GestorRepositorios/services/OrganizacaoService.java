@@ -1,5 +1,6 @@
 package com.ufpb.GestorRepositorios.services;
 
+import com.ufpb.GestorRepositorios.exception.ItemNotFoundException;
 import com.ufpb.GestorRepositorios.models.Organizacao;
 import com.ufpb.GestorRepositorios.repositories.OrganizacaoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,10 +24,7 @@ public class OrganizacaoService {
     }
 
     public Organizacao getOrganizacao(Long id) {
-        Organizacao organizacao = this.organizacaoRepository
-                .findById(id)
-                .orElseThrow(() -> new NoSuchElementException("Organização com id: " + id + "não existe"));
-        return organizacao;
+        return this.organizacaoRepository.findById(id).orElseThrow(() -> new ItemNotFoundException("Organizacao not found"));
     }
 
     public Organizacao createOrganizacao(Organizacao organizacao) {
@@ -36,7 +34,7 @@ public class OrganizacaoService {
     public Organizacao updateOrganizacao(Long id, Organizacao organizacao) {
         Organizacao toUpdate = organizacaoRepository
                 .findById(id)
-                .orElseThrow(() -> new NoSuchElementException("Organização não encontrada com id: " + id));
+                .orElseThrow(() -> new ItemNotFoundException("Organizacao not found"));
         toUpdate.setNome(organizacao.getNome());
         toUpdate.setUsers(organizacao.getUsers());
         toUpdate.setRepositorios(organizacao.getRepositorios());
@@ -45,7 +43,7 @@ public class OrganizacaoService {
 
     public void deleteOrganizacao(Long id) {
         if (!this.organizacaoRepository.existsById(id)) {
-            throw new NoSuchElementException("Organização não encontrada com id: " + id);
+            throw new ItemNotFoundException("Organizacao not found");
         }
         this.organizacaoRepository.deleteById(id);
     }

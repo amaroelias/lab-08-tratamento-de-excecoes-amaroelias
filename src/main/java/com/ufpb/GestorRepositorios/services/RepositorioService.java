@@ -1,5 +1,6 @@
 package com.ufpb.GestorRepositorios.services;
 
+import com.ufpb.GestorRepositorios.exception.ItemNotFoundException;
 import com.ufpb.GestorRepositorios.models.Repositorio;
 import com.ufpb.GestorRepositorios.repositories.RepositorioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,9 @@ public class RepositorioService {
     }
 
     public List<Repositorio> listRepositorios(Long userId) {
+        if(!repositorioRepository.existsById(userId)) {
+            throw new ItemNotFoundException("Repositorio not found");
+        }
         return this.repositorioRepository.findByUserId(userId);
     }
 
@@ -33,7 +37,7 @@ public class RepositorioService {
     public Repositorio updateRepositorio(Long id, Repositorio r) {
         Repositorio toUpdate = this.repositorioRepository
                 .findById(id)
-                .orElseThrow(() -> new NoSuchElementException("Repositorio não encontrado com id: " + id));
+                .orElseThrow(() -> new ItemNotFoundException("Repositorio not found"));
         toUpdate.setNome(r.getNome());
         toUpdate.setUserId(r.getUserId());
         toUpdate.setIsPrivado(r.isPrivado());
@@ -42,7 +46,7 @@ public class RepositorioService {
 
     public void deleteRepositorio(Long id) {
         if (!this.repositorioRepository.existsById(id)) {
-            throw new NoSuchElementException("Repositorio não encontrado com id: " + id);
+            throw new ItemNotFoundException("Repositorio not found");
         }
         this.repositorioRepository.deleteById(id);
     }

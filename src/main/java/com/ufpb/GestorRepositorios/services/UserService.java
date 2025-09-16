@@ -1,13 +1,12 @@
 package com.ufpb.GestorRepositorios.services;
 
-import com.ufpb.GestorRepositorios.models.Repositorio;
+import com.ufpb.GestorRepositorios.exception.ItemNotFoundException;
 import com.ufpb.GestorRepositorios.models.User;
 import com.ufpb.GestorRepositorios.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 
 @Service
 public class UserService {
@@ -24,10 +23,7 @@ public class UserService {
     }
 
     public User getUserById(Long id) {
-        User user = this.userRepository
-                .findById(id)
-                .orElseThrow(() -> new NoSuchElementException("User com id: " + id + "não existe"));
-        return user;
+        return this.userRepository.findById(id).orElseThrow(() -> new ItemNotFoundException("User not found"));
     }
 
     public User createUser(User user) {
@@ -37,7 +33,7 @@ public class UserService {
     public User updateUser(Long id, User user) {
         User toUpdate = this.userRepository
                 .findById(id)
-                .orElseThrow(() -> new NoSuchElementException("User não encontrado com id: " + id));
+                .orElseThrow(() -> new ItemNotFoundException("User not found"));
         toUpdate.setNome(user.getNome());
         toUpdate.setEmail(user.getEmail());
         toUpdate.setPhoto(user.getPhoto());
@@ -47,7 +43,7 @@ public class UserService {
 
     public void deleteUser(Long id) {
         if (!this.userRepository.existsById(id)) {
-            throw new NoSuchElementException("User não encontrado com id: " + id);
+            throw new ItemNotFoundException("User not found");
         }
         this.userRepository.deleteById(id);
     }
